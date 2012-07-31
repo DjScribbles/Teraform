@@ -80,6 +80,9 @@ ipch/
 # ReSharper is a .NET coding add-in
 _ReSharper*
 
+# C# debug caches
+*.Debug.cachefile
+
 # Installshield output folder
 [Ee]xpress
 
