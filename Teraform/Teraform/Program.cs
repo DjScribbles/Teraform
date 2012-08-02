@@ -1,6 +1,6 @@
 using System;
 
-namespace MyGame
+namespace Teraform
 {
 #if WINDOWS || XBOX
     static class Program

@@ -6,7 +6,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MyGame.Camera
+namespace Teraform.Camera
 {
     public class Camera2D
     {

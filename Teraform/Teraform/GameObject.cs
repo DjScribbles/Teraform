@@ -6,84 +6,21 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-using MyCollisionGrid;
+using Teraform;
 
 namespace BoundingBoxCollision
 {
     public class GameObject
     {
-        Texture2D _texture;
+        private Texture2D _texture;
         private Vector2 _positionCarryOver;
         private Rectangle _boundingBox;
-        private Vector2 _velocity;
-        private Vector2 _accelleration;
-        private Vector2 _maxVelocity = new Vector2(500,500);
-        private float _gravitationalAccelleration = 300;
 
-        public Rectangle BoundingBox
-        {
-            get
-            {
-                return _boundingBox;
-            }
-        }
-        public Vector2 Accelleration
-        {
-            set
-            {
-                _accelleration.X = value.X;
-                _accelleration.Y = value.Y;
-            }
-            get
-            {
-                return _accelleration;
-            }
-        }
-        public Vector2 Velocity
-        {
-            set
-            {
-                _velocity = value;
-            }
-            get
-            {
-                return _velocity;
-            }
-        }
-        public Vector2 MaxVelocity
-        {
-            set
-            {
-                _maxVelocity = value;
-            }
-            get
-            {
-                return _maxVelocity;
-            }
-        }
-
-        public float RunSpeed
-        {
-            set
-            {
-                _maxVelocity.X = value;
-            }
-            get{ return _maxVelocity.X;}
-        }
-
-        private Vector2 Position
-        {
-            set
-            {
-                _boundingBox.X = (int)value.X;
-                _boundingBox.Y = (int)value.Y;
-            }
-            get
-            {
-                return new Vector2(_boundingBox.X, _boundingBox.Y);
-            }
-
-        }
+        protected Vector2 _velocity;
+        protected Vector2 _accelleration;
+        protected Vector2 _maxVelocity = new Vector2(500,600);
+        protected float _gravitationalAccelleration = 700;
+        private bool _isAirborn = false;
 
         public GameObject(Texture2D texture, Vector2 position)
         {
@@ -100,13 +37,76 @@ namespace BoundingBoxCollision
             _accelleration = Vector2.Zero;
         }
 
+        public Rectangle BoundingBox
+        {
+            get
+            {
+                return _boundingBox;
+            }
+        }
+
+        public Vector2 Accelleration
+        {
+            set
+            {
+                _accelleration = value;
+            }
+            get
+            {
+                return _accelleration;
+            }
+        }
+
+        public Vector2 Velocity
+        {
+            set
+            {
+                _velocity = value;
+            }
+            get
+            {
+                return _velocity;
+            }
+        }
+
+        public Vector2 MaxVelocity
+        {
+            set
+            {
+                _maxVelocity = value;
+            }
+            get
+            {
+                return _maxVelocity;
+            }
+        }
+
+        public bool IsAirborn
+        {
+            get { return _isAirborn; }
+        }
+
+        private Vector2 Position
+        {
+            set
+            {
+                _boundingBox.X = (int)value.X;
+                _boundingBox.Y = (int)value.Y;
+            }
+            get
+            {
+                return new Vector2(_boundingBox.X, _boundingBox.Y);
+            }
+
+        }
+
 
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(_texture, _boundingBox, Color.White);
         }
 
-        public void Update(double total_seconds_elapsed, CollisionGrid grid)
+        public virtual void Update(double total_seconds_elapsed, CollisionGrid grid)
         {
             if (total_seconds_elapsed == 0.0)
                 return;
@@ -122,7 +122,18 @@ namespace BoundingBoxCollision
             if (distance_traveled.X != distance_to_travel.X)
                 new_velocity.X = 0;
             if (distance_traveled.Y != distance_to_travel.Y)
+            {
+                //If we were stopped from traveling downward, set the isAirborn flag to false
+                if (distance_to_travel.Y > distance_traveled.Y)
+                {
+                    _isAirborn = false;
+                }
                 new_velocity.Y = 0;
+            }
+            else
+            {
+                _isAirborn = true;
+            }
 
             Velocity = new_velocity;
 

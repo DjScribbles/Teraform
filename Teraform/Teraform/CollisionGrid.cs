@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Blocks;
 
 
-namespace MyCollisionGrid
+namespace Teraform
 {
     
     public class CollisionGrid
