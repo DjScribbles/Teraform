@@ -6,30 +6,20 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 
-namespace Blocks
+namespace Teraform
 {
-    class BasicBlock
+    class BasicBlock : GridObject
     {
-        Texture2D ActiveTexture;
         Texture2D PassiveTexture; 
-        public Vector2 Position;
-        public bool IsActive;
 
-        public BasicBlock(Texture2D active_texture, Texture2D passive_texture, int x = 0, int y = 0, bool is_active = false)
+        public BasicBlock(Texture2D active_texture, Texture2D passive_texture, int grid_x = 0, int grid_y = 0, bool is_active = false) : base(active_texture,grid_x,grid_y,is_active)
         {
-            ActiveTexture = active_texture;
             PassiveTexture = passive_texture;
-            Position.X = x;
-            Position.Y = y;
-            IsActive = is_active;
         }
 
-        public BasicBlock(Texture2D active_texture, Texture2D passive_texture, Vector2 position, bool is_active = false)
+        public BasicBlock(Texture2D active_texture, Texture2D passive_texture, Point position, bool is_active = false) : base(active_texture,position,is_active)
         {
-            ActiveTexture = active_texture;
             PassiveTexture = passive_texture;
-            Position = position;
-            IsActive = is_active;
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -37,9 +27,9 @@ namespace Blocks
             Texture2D texture = PassiveTexture;
             if (IsActive)
             {
-                texture = ActiveTexture;
+                texture = Texture;
             }
-            spriteBatch.Draw(texture, Position, Color.White);
+            spriteBatch.Draw(texture, WorldPosition, Color.White);
         }
 
         public Rectangle BoundingBox
@@ -49,14 +39,14 @@ namespace Blocks
                 if (IsActive)
                 {
                     return new Rectangle(
-                        (int)Position.X,
-                        (int)Position.Y,
-                        ActiveTexture.Width,
-                        ActiveTexture.Height);
+                        (int)WorldPosition.X,
+                        (int)WorldPosition.Y,
+                        Texture.Width,
+                        Texture.Height);
                 }
                 return new Rectangle(
-                    (int)Position.X,
-                    (int)Position.Y,
+                    (int)WorldPosition.X,
+                    (int)WorldPosition.Y,
                     PassiveTexture.Width,
                     PassiveTexture.Height);
             }
