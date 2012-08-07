@@ -22,7 +22,7 @@ namespace Teraform
             PassiveTexture = passive_texture;
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public override void Draw(SpriteBatch spriteBatch)
         {
             Texture2D texture = PassiveTexture;
             if (IsActive)
@@ -32,7 +32,7 @@ namespace Teraform
             spriteBatch.Draw(texture, WorldPosition, Color.White);
         }
 
-        public Rectangle BoundingBox
+        public override Rectangle BoundingBox
         {
             get
             {
