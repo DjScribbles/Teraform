@@ -6,7 +6,6 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-using Blocks;
 
 
 namespace Teraform
@@ -15,8 +14,8 @@ namespace Teraform
     public class CollisionGrid
     {
         public bool DEBUG_ENABLED = false;
-        const int BLOCK_WIDTH = 16;
-        const int BLOCK_HEIGHT = 16;
+        public const int BLOCK_WIDTH = 16;
+        public const int BLOCK_HEIGHT = 16;
         private int _width;
         private int _height;
     
@@ -32,7 +31,7 @@ namespace Teraform
             {
                 for (int row = 0; row < height; row++)
                 {
-                    Blocks[column, row] = new BasicBlock(active, passive, column * BLOCK_WIDTH, row * BLOCK_HEIGHT, false);
+                    Blocks[column, row] = new BasicBlock(active, passive, column, row, false);
                 }
             }
 
@@ -53,7 +52,7 @@ namespace Teraform
                 {
                     for (int row = 0; row < height; row++)
                     {
-                        Blocks[column, row] = new BasicBlock(active, passive, column * BLOCK_WIDTH, row * BLOCK_HEIGHT, bool.Parse(file.ReadLine()));
+                        Blocks[column, row] = new BasicBlock(active, passive, column, row, bool.Parse(file.ReadLine()));
                     }
                 }
                 file.Close();
@@ -95,7 +94,7 @@ namespace Teraform
                 block.Draw(spriteBatch);
             }
         }
-        public Vector2 CheckCollision(Rectangle object_bounds, Vector2 object_velocity)
+        public Vector2 CheckCollision(Rectangle object_bounds, Vector2 object_velocity, bool fall_through = false)
         {          
             if (object_velocity == Vector2.Zero)
                 return object_velocity;
@@ -262,6 +261,7 @@ namespace Teraform
                         bool is_active = true;
                         try 
                         {
+                            //TODO check fallthrough
                             is_active = Blocks[block, next_block_y].IsActive;
                         }
                         catch (IndexOutOfRangeException err)
@@ -296,6 +296,7 @@ namespace Teraform
                         if (DEBUG_ENABLED == true) Console.Out.Write("[{0}, {1}]", trailing_x_block, next_block_y);
                         try
                         {
+                            //TODO check fallthrough
                             is_active = Blocks[trailing_x_block, next_block_y].IsActive;
                         }
                         catch (IndexOutOfRangeException err)  //if the trailing block is out of bounds, we don't care
