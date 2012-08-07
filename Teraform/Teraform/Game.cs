@@ -9,7 +9,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using BoundingBoxCollision;
-using Blocks;
 
 using Teraform.Camera;
 using Teraform;
@@ -127,9 +126,10 @@ namespace Teraform
             //Buttons lastFrame;
             //Buttons currentFrame;
             //Buttons pressed = ~lastFrame & currentFrame;
-
+            
             theDude.Run(GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.X);
             theDude.Jump((GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed));
+            theDude.FallThrough = (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y < -0.25);
 
             if ((GamePad.GetState(PlayerIndex.One).Buttons.B == ButtonState.Pressed))
             {
@@ -163,7 +163,7 @@ namespace Teraform
             {
                 _gameCamera = new Camera2D(graphics.GraphicsDevice.Viewport);
             }
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.LightSkyBlue);
 
             Plane y_plane = new Plane(-1 * Vector3.UnitY, graphics.GraphicsDevice.Viewport.Height / 2);
             //Plane y_plane = new Plane(Vector3.UnitY, (float)-gameTime.TotalGameTime.TotalSeconds);

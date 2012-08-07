@@ -16,7 +16,7 @@ namespace Teraform
         private float _desiredVelocity = 0;
         private int _health;
 
-        private float _runVelocity = 400.0f;
+        private float _runVelocity = 350.0f;
         private float _runAccelleration = 250.0f;
         private float _runDeccelleration = -400.0f;
         private float _jumpStrength = -400.0f;
@@ -33,8 +33,14 @@ namespace Teraform
             }
             else if ((keepJumping == false) && (_velocity.Y < (_jumpStrength / 4)))
             {
-
+                _velocity.Y = _jumpStrength / 4;
             }
+        }
+
+        public bool FallThrough
+        {
+            get { return _fallThrough; }
+            set { _fallThrough = value; }
         }
 
         /**

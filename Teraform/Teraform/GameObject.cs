@@ -21,6 +21,7 @@ namespace BoundingBoxCollision
         protected Vector2 _maxVelocity = new Vector2(500,600);
         protected float _gravitationalAccelleration = 700;
         private bool _isAirborn = false;
+        protected bool _fallThrough = false;
 
         public GameObject(Texture2D texture, Vector2 position)
         {
@@ -115,8 +116,8 @@ namespace BoundingBoxCollision
             new_velocity.Y += _gravitationalAccelleration * (float)total_seconds_elapsed;
             new_velocity = Vector2.Clamp(new_velocity, Vector2.Negate(_maxVelocity), _maxVelocity);
 
-            Vector2 distance_to_travel = (new_velocity * (float)total_seconds_elapsed) + _positionCarryOver; 
-            Vector2 distance_traveled = grid.CheckCollision(BoundingBox, distance_to_travel);
+            Vector2 distance_to_travel = (new_velocity * (float)total_seconds_elapsed) + _positionCarryOver;
+            Vector2 distance_traveled = grid.CheckCollision(BoundingBox, distance_to_travel, _fallThrough);
 
             //Check to see if we moved as expected, if not we hit a block, so set the new velocity to 0.
             if (distance_traveled.X != distance_to_travel.X)
