@@ -45,7 +45,14 @@ namespace Teraform
 
         public virtual void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_texture, _worldPosition, Color.White);
+            if (_isActive)
+                spriteBatch.Draw(_texture, _worldPosition, Color.White);
+        }
+
+        protected virtual void Draw(SpriteBatch spriteBatch, Texture2D texture)
+        {
+            if (_isActive)
+                spriteBatch.Draw(texture, _worldPosition, Color.White);
         }
 
         public virtual Point GridPosition
@@ -94,7 +101,14 @@ namespace Teraform
             
         }
 
-        public virtual bool CheckCollision(bool tryFallThrough = false)
+        public enum BLOCK_SURFACE
+        {
+            BLOCK_TOP,
+            BLOCK_LEFT,
+            BLOCK_BOTTOM,
+            BLOCK_RIGHT
+        };
+        public virtual bool CheckCollision(BLOCK_SURFACE contactSurface, int tryFallThrough)
         {
             return _isActive;
         }

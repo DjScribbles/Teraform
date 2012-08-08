@@ -78,17 +78,17 @@ namespace Teraform
                 
                     try
                     {
-                        theGrid = new CollisionGrid("C:\\Users\\Public\\MyLevel.lvl", Content.Load<Texture2D>("Active"), Content.Load<Texture2D>("Inactive"));
+                        theGrid = new CollisionGrid("C:\\Users\\Public\\MyLevel.lvl", Content.Load<Texture2D>("Active"), Content.Load<Texture2D>("Inactive"), Content.Load<Texture2D>("Platform"));
                     }
                     catch //err as F
                     {
-                        theGrid = new CollisionGrid(100, 100, Content.Load<Texture2D>("Active"), Content.Load<Texture2D>("Inactive"));
+                        theGrid = new CollisionGrid(100, 100, Content.Load<Texture2D>("Active"), Content.Load<Texture2D>("Inactive"), Content.Load<Texture2D>("Platform"));
                     }
 
             }
             else
             {
-                    theGrid = new CollisionGrid(100, 100, Content.Load<Texture2D>("Active"), Content.Load<Texture2D>("Inactive"));
+                theGrid = new CollisionGrid(100, 100, Content.Load<Texture2D>("Active"), Content.Load<Texture2D>("Inactive"), Content.Load<Texture2D>("Platform"));
             }
 
             theDude = new GameCharacter(theDudeTexture, Vector2.Zero);
@@ -129,7 +129,11 @@ namespace Teraform
             
             theDude.Run(GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.X);
             theDude.Jump((GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed));
-            theDude.FallThrough = (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y < -0.25);
+            
+            if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y < -0.25)
+                theDude.FallThrough = (1 << (int)Teraform.GridObject.BLOCK_SURFACE.BLOCK_TOP);
+            else
+                theDude.FallThrough = 0;
 
             if ((GamePad.GetState(PlayerIndex.One).Buttons.B == ButtonState.Pressed))
             {
@@ -141,14 +145,18 @@ namespace Teraform
             }
 
             theDude.Update(gameTime.ElapsedGameTime.TotalSeconds, theGrid);
-       
+
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
-                theGrid.SetBlockState(Mouse.GetState().X + _gameCamera.Left, Mouse.GetState().Y + _gameCamera.Top, true);
+                theGrid.PlaceObject(Mouse.GetState().X + _gameCamera.Left, Mouse.GetState().Y + _gameCamera.Top, new BasicBlock(Content.Load<Texture2D>("Active"), Content.Load<Texture2D>("Inactive"), 0, 0, true));
+            }
+            if (Mouse.GetState().MiddleButton == ButtonState.Pressed)
+            {
+                theGrid.PlaceObject(Mouse.GetState().X + _gameCamera.Left, Mouse.GetState().Y + _gameCamera.Top, new Platform(Content.Load<Texture2D>("Platform"), new Point(0,0)));
             }
             if (Mouse.GetState().RightButton == ButtonState.Pressed)
             {
-                theGrid.SetBlockState(Mouse.GetState().X + _gameCamera.Left, Mouse.GetState().Y + _gameCamera.Top, false);
+                theGrid.RemoveObject(Mouse.GetState().X + _gameCamera.Left, Mouse.GetState().Y + _gameCamera.Top);
             }
             base.Update(gameTime);
         }

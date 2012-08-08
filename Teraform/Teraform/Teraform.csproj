@@ -75,6 +75,7 @@
     <Compile Include="BasicBlock.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Character.cs" />
+    <Compile Include="Platform.cs" />
     <Compile Include="CollisionGrid.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="GridObject.cs" />

@@ -21,7 +21,7 @@ namespace BoundingBoxCollision
         protected Vector2 _maxVelocity = new Vector2(500,600);
         protected float _gravitationalAccelleration = 700;
         private bool _isAirborn = false;
-        protected bool _fallThrough = false;
+        protected int _fallThrough = 0;
 
         public GameObject(Texture2D texture, Vector2 position)
         {

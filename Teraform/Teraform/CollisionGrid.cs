@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Teraform
 {
-    
+
     public class CollisionGrid
     {
         public bool DEBUG_ENABLED = false;
@@ -18,25 +18,27 @@ namespace Teraform
         public const int BLOCK_HEIGHT = 16;
         private int _width;
         private int _height;
-    
-        BasicBlock[,] Blocks;
+
+        //TODO make this private _blocks, and override Blocks[,] so that we can range check it
+        private GridObject[,] _blocks;
 
         //TODO fix texture loading so this isn't needed, it's really dumb
-        public CollisionGrid(int width, int height, Texture2D active, Texture2D passive)
+        public CollisionGrid(int width, int height, Texture2D active, Texture2D passive, Texture2D platformTexture)
         {
             _width = width;
             _height = height;
-            Blocks = new BasicBlock[width, height];
-            for (int column = 0; column < width; column++)
-            {
-                for (int row = 0; row < height; row++)
-                {
-                    Blocks[column, row] = new BasicBlock(active, passive, column, row, false);
-                }
-            }
+            _blocks = new GridObject[width, height];
+            //Point index;
+            //for (index.X = 0; index.X < width; index.X++)
+            //{
+            //    for (index.Y = 0; index.Y < height; index.Y++)
+            //    {
+            //        Blocks[index.X, index.Y] = new BasicBlock(active, passive, index, false);
+            //    }
+            //}
 
         }
-        public CollisionGrid(String filename, Texture2D active, Texture2D passive)
+        public CollisionGrid(String filename, Texture2D active, Texture2D passive, Texture2D platformTexture)
         {
             //TODO read from file
             using (System.IO.StreamReader file = new System.IO.StreamReader(filename))
@@ -46,41 +48,56 @@ namespace Teraform
 
                 _width = width;
                 _height = height;
-                Blocks = new BasicBlock[width, height];
+                _blocks = new GridObject[width, height];
 
-                for (int column = 0; column < width; column++)
+                Point index;
+                for (index.X = 0; index.X < width; index.X++)
                 {
-                    for (int row = 0; row < height; row++)
+                    for (index.Y = 0; index.Y < height; index.Y++)
                     {
-                        Blocks[column, row] = new BasicBlock(active, passive, column, row, bool.Parse(file.ReadLine()));
+                        String objectName = file.ReadLine();
+                        if (objectName.CompareTo("Teraform.BasicBlock") == 0)
+                        {
+                            _blocks[index.X, index.Y] = new BasicBlock(active, passive, index, true);
+                        }
+                        if (objectName.CompareTo("Teraform.Platform") == 0)
+                        {
+                            _blocks[index.X, index.Y] = new Platform(platformTexture, index, true);
+                        }
+
                     }
                 }
                 file.Close();
             }
         }
 
-        
+
         public void Save()
         {
             //TODO write to file
             const String filePath = "C:\\Users\\Public\\MyLevel.lvl";
             const String backupPath = "C:\\Users\\Public\\MyLevel.bak";
-            
+
             //if (System.IO.File.Exists(backupPath) == true)
             //    System.IO.File.Delete(backupPath);
 
             //if (System.IO.File.Exists(filePath) == true)
             //    System.IO.File.Move(filePath, backupPath);
-           
+
             //System.IO.File.Create(filePath);
-            
+
             using (System.IO.StreamWriter file = new System.IO.StreamWriter(filePath))
             {
                 file.WriteLine("{0}", _width);
                 file.WriteLine("{0}", _height);
-                foreach (BasicBlock block in Blocks)
+                foreach (GridObject block in _blocks)
                 {
-                    file.WriteLine(block.IsActive);       
+                    if (block == null)
+                        file.WriteLine(0);
+                    else
+                    {
+                        file.WriteLine(block.ToString());
+                    }
                 }
                 file.Write(file.NewLine);
                 file.Close();
@@ -89,24 +106,25 @@ namespace Teraform
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            foreach (BasicBlock block in Blocks)
+            foreach (GridObject block in _blocks)
             {
-                block.Draw(spriteBatch);
+                if (block != null)
+                    block.Draw(spriteBatch);
             }
         }
-        public Vector2 CheckCollision(Rectangle object_bounds, Vector2 object_velocity, bool fall_through = false)
-        {          
+
+        public Vector2 CheckCollision(Rectangle object_bounds, Vector2 object_velocity, int fall_through = 0)
+        {
             if (object_velocity == Vector2.Zero)
                 return object_velocity;
-            
-            //TODO handle rounding, fix sign errors since everything is backwards
+
             int current_left_block = object_bounds.X / BLOCK_WIDTH;
             int current_right_block = object_bounds.Right / BLOCK_WIDTH;
             int current_top_block = object_bounds.Top / BLOCK_HEIGHT;
             int current_bottom_block = object_bounds.Bottom / BLOCK_HEIGHT;
 
-            //TODO handle rounding
             int blocks_to_travel_x = 0;
+            GridObject.BLOCK_SURFACE x_surface = GridObject.BLOCK_SURFACE.BLOCK_RIGHT;
             if (object_velocity.X < 0)
             {
                 blocks_to_travel_x = ((int)object_velocity.X - (BLOCK_WIDTH - (object_bounds.Left % BLOCK_WIDTH))) / BLOCK_WIDTH;
@@ -114,10 +132,11 @@ namespace Teraform
             else if (object_velocity.X > 0)
             {
                 blocks_to_travel_x = ((int)object_velocity.X + (object_bounds.Right % BLOCK_WIDTH)) / BLOCK_WIDTH;
+                x_surface = GridObject.BLOCK_SURFACE.BLOCK_LEFT;
             }
 
-            //TODO handle rounding
             int blocks_to_travel_y = 0;
+            GridObject.BLOCK_SURFACE y_surface = GridObject.BLOCK_SURFACE.BLOCK_BOTTOM;
             if (object_velocity.Y < 0)
             {
                 blocks_to_travel_y = ((int)object_velocity.Y - (BLOCK_HEIGHT - (object_bounds.Top % BLOCK_HEIGHT))) / BLOCK_HEIGHT;
@@ -125,6 +144,7 @@ namespace Teraform
             else if (object_velocity.Y > 0)
             {
                 blocks_to_travel_y = ((int)object_velocity.Y + (object_bounds.Bottom % BLOCK_HEIGHT)) / BLOCK_HEIGHT;
+                y_surface = GridObject.BLOCK_SURFACE.BLOCK_TOP;
             }
 
 
@@ -142,8 +162,9 @@ namespace Teraform
                 Console.Out.WriteLine("Blocks to travel: X={0} Y={1}", blocks_to_travel_x, blocks_to_travel_y);
                 Console.Out.WriteLine("We're moving between blocks, checking the following:");
             }
+
             //TODO consider breaking collision detection into a seperate function.
-            while ((blocks_to_travel_x != 0) || (blocks_to_travel_y !=0))
+            while ((blocks_to_travel_x != 0) || (blocks_to_travel_y != 0))
             {
 
                 if (blocks_to_travel_x != 0)
@@ -169,7 +190,11 @@ namespace Teraform
                         bool is_active = true;
                         try
                         {
-                            is_active = Blocks[next_block_x,block].IsActive;
+                            GridObject grid_object = GetBlock(next_block_x, block);
+                            if (grid_object != null)
+                                is_active = grid_object.CheckCollision(x_surface, fall_through);
+                            else
+                                is_active = false;
                         }
                         catch (IndexOutOfRangeException err)
                         {
@@ -204,13 +229,18 @@ namespace Teraform
 
                         try
                         {
-                            is_active = Blocks[next_block_x, trailing_y_block].IsActive;
+                            GridObject grid_object = GetBlock(next_block_x, trailing_y_block);
+                            if (grid_object != null)
+                                is_active = grid_object.CheckCollision(x_surface, fall_through);
+                            else
+                                is_active = false;
+
                         }
                         catch (IndexOutOfRangeException err)  //if the trailing block is out of bounds, we don't care
                         {
                             is_active = false;
                         }
-                     
+
                         if (is_active == true)
                         {
                             if (DEBUG_ENABLED == true) Console.Out.Write("X HIT!{0}", Console.Out.NewLine);
@@ -259,10 +289,13 @@ namespace Teraform
                         //If an active block is found, travel no more blocks
                         //TODO check that all are within height and width
                         bool is_active = true;
-                        try 
+                        try
                         {
-                            //TODO check fallthrough
-                            is_active = Blocks[block, next_block_y].IsActive;
+                            GridObject grid_object = GetBlock(block, next_block_y);
+                            if (grid_object != null)
+                                is_active = grid_object.CheckCollision(y_surface, fall_through);
+                            else
+                                is_active = false;
                         }
                         catch (IndexOutOfRangeException err)
                         {
@@ -296,8 +329,11 @@ namespace Teraform
                         if (DEBUG_ENABLED == true) Console.Out.Write("[{0}, {1}]", trailing_x_block, next_block_y);
                         try
                         {
-                            //TODO check fallthrough
-                            is_active = Blocks[trailing_x_block, next_block_y].IsActive;
+                            GridObject grid_object = GetBlock(trailing_x_block, next_block_y);
+                            if (grid_object != null)
+                                is_active = grid_object.CheckCollision(y_surface, fall_through);
+                            else
+                                is_active = false;
                         }
                         catch (IndexOutOfRangeException err)  //if the trailing block is out of bounds, we don't care
                         {
@@ -380,9 +416,10 @@ namespace Teraform
         {
             int block_x = x / BLOCK_WIDTH;
             int block_y = y / BLOCK_HEIGHT;
-            if ((block_x < _width) && (block_y < _height) && (block_x >= 0) && (block_y >= 0))
+            GridObject block = GetBlock(block_x, block_y);
+            if (block != null)
             {
-                Blocks[block_x, block_y].IsActive = is_active;
+                _blocks[block_x, block_y].IsActive = is_active;
             }
         }
         //TODO handle the mouse pointer clicks and other events.
@@ -404,6 +441,35 @@ namespace Teraform
         public void CheckColisions(Rectangle object_bounds)
         {
 
+        }
+        public GridObject GetBlock(int grid_x, int grid_y)
+        {
+            if (grid_x < 0 || grid_x >= _width || grid_y < 0 || grid_y >= _height)
+                return null;
+            return _blocks[grid_x, grid_y];
+        }
+
+        public bool PlaceObject(int world_x, int world_y, GridObject grid_object)
+        {
+            int grid_x = world_x / BLOCK_WIDTH;
+            int grid_y = world_y / BLOCK_HEIGHT;
+            if (grid_x < 0 || grid_x >= _width || grid_y < 0 || grid_y >= _height || _blocks[grid_x, grid_y] != null)
+                return false;
+
+            grid_object.GridPosition = new Point(grid_x, grid_y);
+            _blocks[grid_x, grid_y] = grid_object;
+            return true;
+        }
+
+        public bool RemoveObject(int world_x, int world_y)
+        {
+            int grid_x = world_x / BLOCK_WIDTH;
+            int grid_y = world_y / BLOCK_HEIGHT;
+            if (grid_x < 0 || grid_x >= _width || grid_y < 0 || grid_y >= _height || _blocks[grid_x, grid_y] == null)
+                return false;
+
+            _blocks[grid_x, grid_y] = null;
+            return true;
         }
     }
 }

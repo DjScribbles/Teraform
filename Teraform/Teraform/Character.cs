@@ -14,12 +14,13 @@ namespace Teraform
     public class GameCharacter : GameObject
     {
         private float _desiredVelocity = 0;
-        private int _health;
+        protected int _healthCurrent;
+        protected int _healthMax;
 
-        private float _runVelocity = 350.0f;
-        private float _runAccelleration = 250.0f;
-        private float _runDeccelleration = -400.0f;
-        private float _jumpStrength = -400.0f;
+        protected float _runVelocity = 350.0f;
+        protected float _runAccelleration = 250.0f;
+        protected float _runDeccelleration = -400.0f;
+        protected float _jumpStrength = -410.0f;
 
         public GameCharacter(Texture2D texture, Vector2 position) : base(texture,position)
         {
@@ -37,7 +38,7 @@ namespace Teraform
             }
         }
 
-        public bool FallThrough
+        public int FallThrough
         {
             get { return _fallThrough; }
             set { _fallThrough = value; }
