@@ -22,7 +22,7 @@ namespace Teraform
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         static Camera2D _gameCamera;
-        GameCharacter theDude;
+        Player theDude;
         //GameObject theBabe;
         SpriteFont font;
         CollisionGrid theGrid;
@@ -33,7 +33,7 @@ namespace Teraform
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-      
+        
         public Game1()
         {
             
@@ -91,7 +91,7 @@ namespace Teraform
                 theGrid = new CollisionGrid(100, 100, Content.Load<Texture2D>("Active"), Content.Load<Texture2D>("Inactive"), Content.Load<Texture2D>("Platform"));
             }
 
-            theDude = new GameCharacter(theDudeTexture, Vector2.Zero);
+            theDude = new Player(theDudeTexture, Vector2.Zero);
             
             // TODO: use this.Content to load your game content here
         }
@@ -113,7 +113,8 @@ namespace Teraform
         protected override void Update(GameTime gameTime)
         {
             // Allows the game to exit
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            if ((GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed) ||
+                (Keyboard.GetState().IsKeyDown(Keys.Escape) == true))
             {
                 theGrid.Save();
                 this.Exit();
@@ -126,26 +127,10 @@ namespace Teraform
             //Buttons lastFrame;
             //Buttons currentFrame;
             //Buttons pressed = ~lastFrame & currentFrame;
-            
-            theDude.Run(GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.X);
-            theDude.Jump((GamePad.GetState(PlayerIndex.One).Buttons.A == ButtonState.Pressed));
-            
-            if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y < -0.25)
-                theDude.FallThrough = (1 << (int)Teraform.GridObject.BLOCK_SURFACE.BLOCK_TOP);
-            else
-                theDude.FallThrough = 0;
 
-            if ((GamePad.GetState(PlayerIndex.One).Buttons.B == ButtonState.Pressed))
-            {
-                theGrid.DEBUG_ENABLED = true;
-            }
-            else
-            {
-                theGrid.DEBUG_ENABLED = false;
-            }
-
+            
             theDude.Update(gameTime.ElapsedGameTime.TotalSeconds, theGrid);
-
+            
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
                 theGrid.PlaceObject(Mouse.GetState().X + _gameCamera.Left, Mouse.GetState().Y + _gameCamera.Top, new BasicBlock(Content.Load<Texture2D>("Active"), Content.Load<Texture2D>("Inactive"), 0, 0, true));
@@ -158,6 +143,7 @@ namespace Teraform
             {
                 theGrid.RemoveObject(Mouse.GetState().X + _gameCamera.Left, Mouse.GetState().Y + _gameCamera.Top);
             }
+
             base.Update(gameTime);
         }
 
