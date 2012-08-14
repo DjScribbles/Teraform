@@ -40,7 +40,6 @@ namespace Teraform
         }
         public CollisionGrid(String filename, Texture2D active, Texture2D passive, Texture2D platformTexture)
         {
-            //TODO read from file
             using (System.IO.StreamReader file = new System.IO.StreamReader(filename))
             {
                 int width = int.Parse(file.ReadLine());
