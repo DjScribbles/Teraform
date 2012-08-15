@@ -133,11 +133,11 @@ namespace Teraform
             
             if (Mouse.GetState().LeftButton == ButtonState.Pressed)
             {
-                theGrid.PlaceObject(Mouse.GetState().X + _gameCamera.Left, Mouse.GetState().Y + _gameCamera.Top, new BasicBlock(Content.Load<Texture2D>("Active"), Content.Load<Texture2D>("Inactive"), 0, 0, true));
+                theGrid.PlaceObject(Mouse.GetState().X + _gameCamera.Left, Mouse.GetState().Y + _gameCamera.Top, new BasicBlock(new Point(0,0), Content.Load<Texture2D>("Active"), Item.ITEM_STATE.IN_GRID));
             }
             if (Mouse.GetState().MiddleButton == ButtonState.Pressed)
             {
-                theGrid.PlaceObject(Mouse.GetState().X + _gameCamera.Left, Mouse.GetState().Y + _gameCamera.Top, new Platform(Content.Load<Texture2D>("Platform"), new Point(0,0)));
+                theGrid.PlaceObject(Mouse.GetState().X + _gameCamera.Left, Mouse.GetState().Y + _gameCamera.Top, new Platform(new Point(0, 0), Content.Load<Texture2D>("Platform"), Item.ITEM_STATE.IN_GRID));
             }
             if (Mouse.GetState().RightButton == ButtonState.Pressed)
             {

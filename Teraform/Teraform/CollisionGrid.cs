@@ -20,14 +20,14 @@ namespace Teraform
         private int _height;
 
         //TODO make this private _blocks, and override Blocks[,] so that we can range check it
-        private GridObject[,] _blocks;
+        private Item[,] _blocks;
 
         //TODO fix texture loading so this isn't needed, it's really dumb
         public CollisionGrid(int width, int height, Texture2D active, Texture2D passive, Texture2D platformTexture)
         {
             _width = width;
             _height = height;
-            _blocks = new GridObject[width, height];
+            _blocks = new Item[width, height];
             //Point index;
             //for (index.X = 0; index.X < width; index.X++)
             //{
@@ -47,7 +47,7 @@ namespace Teraform
 
                 _width = width;
                 _height = height;
-                _blocks = new GridObject[width, height];
+                _blocks = new Item[width, height];
 
                 Point index;
                 for (index.X = 0; index.X < width; index.X++)
@@ -57,11 +57,12 @@ namespace Teraform
                         String objectName = file.ReadLine();
                         if (objectName.CompareTo("Teraform.BasicBlock") == 0)
                         {
-                            _blocks[index.X, index.Y] = new BasicBlock(active, passive, index, true);
+                            _blocks[index.X, index.Y] = new BasicBlock(new Point(index.X * 16, index.Y * 16), active, Item.ITEM_STATE.IN_GRID);
+
                         }
                         if (objectName.CompareTo("Teraform.Platform") == 0)
                         {
-                            _blocks[index.X, index.Y] = new Platform(platformTexture, index, true);
+                            _blocks[index.X, index.Y] = new Platform(new Point(index.X * 16, index.Y * 16), platformTexture, Item.ITEM_STATE.IN_GRID);
                         }
 
                     }
@@ -89,7 +90,7 @@ namespace Teraform
             {
                 file.WriteLine("{0}", _width);
                 file.WriteLine("{0}", _height);
-                foreach (GridObject block in _blocks)
+                foreach (Item block in _blocks)
                 {
                     if (block == null)
                         file.WriteLine(0);
@@ -105,7 +106,7 @@ namespace Teraform
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            foreach (GridObject block in _blocks)
+            foreach (Item block in _blocks)
             {
                 if (block != null)
                     block.Draw(spriteBatch);
@@ -123,7 +124,7 @@ namespace Teraform
             int current_bottom_block = object_bounds.Bottom / BLOCK_HEIGHT;
 
             int blocks_to_travel_x = 0;
-            GridObject.BLOCK_SURFACE x_surface = GridObject.BLOCK_SURFACE.BLOCK_RIGHT;
+            Item.BLOCK_SURFACE x_surface = Item.BLOCK_SURFACE.BLOCK_RIGHT;
             if (object_velocity.X < 0)
             {
                 blocks_to_travel_x = ((int)object_velocity.X - (BLOCK_WIDTH - (object_bounds.Left % BLOCK_WIDTH))) / BLOCK_WIDTH;
@@ -131,11 +132,11 @@ namespace Teraform
             else if (object_velocity.X > 0)
             {
                 blocks_to_travel_x = ((int)object_velocity.X + (object_bounds.Right % BLOCK_WIDTH)) / BLOCK_WIDTH;
-                x_surface = GridObject.BLOCK_SURFACE.BLOCK_LEFT;
+                x_surface = Item.BLOCK_SURFACE.BLOCK_LEFT;
             }
 
             int blocks_to_travel_y = 0;
-            GridObject.BLOCK_SURFACE y_surface = GridObject.BLOCK_SURFACE.BLOCK_BOTTOM;
+            Item.BLOCK_SURFACE y_surface = Item.BLOCK_SURFACE.BLOCK_BOTTOM;
             if (object_velocity.Y < 0)
             {
                 blocks_to_travel_y = ((int)object_velocity.Y - (BLOCK_HEIGHT - (object_bounds.Top % BLOCK_HEIGHT))) / BLOCK_HEIGHT;
@@ -143,7 +144,7 @@ namespace Teraform
             else if (object_velocity.Y > 0)
             {
                 blocks_to_travel_y = ((int)object_velocity.Y + (object_bounds.Bottom % BLOCK_HEIGHT)) / BLOCK_HEIGHT;
-                y_surface = GridObject.BLOCK_SURFACE.BLOCK_TOP;
+                y_surface = Item.BLOCK_SURFACE.BLOCK_TOP;
             }
 
 
@@ -189,9 +190,9 @@ namespace Teraform
                         bool is_active = true;
                         try
                         {
-                            GridObject grid_object = GetBlock(next_block_x, block);
+                            Item grid_object = GetBlock(next_block_x, block);
                             if (grid_object != null)
-                                is_active = grid_object.CheckCollision(x_surface, fall_through);
+                                is_active = grid_object.CheckGridCollision(x_surface, fall_through);
                             else
                                 is_active = false;
                         }
@@ -228,9 +229,9 @@ namespace Teraform
 
                         try
                         {
-                            GridObject grid_object = GetBlock(next_block_x, trailing_y_block);
+                            Item grid_object = GetBlock(next_block_x, trailing_y_block);
                             if (grid_object != null)
-                                is_active = grid_object.CheckCollision(x_surface, fall_through);
+                                is_active = grid_object.CheckGridCollision(x_surface, fall_through);
                             else
                                 is_active = false;
 
@@ -290,9 +291,9 @@ namespace Teraform
                         bool is_active = true;
                         try
                         {
-                            GridObject grid_object = GetBlock(block, next_block_y);
+                            Item grid_object = GetBlock(block, next_block_y);
                             if (grid_object != null)
-                                is_active = grid_object.CheckCollision(y_surface, fall_through);
+                                is_active = grid_object.CheckGridCollision(y_surface, fall_through);
                             else
                                 is_active = false;
                         }
@@ -328,9 +329,9 @@ namespace Teraform
                         if (DEBUG_ENABLED == true) Console.Out.Write("[{0}, {1}]", trailing_x_block, next_block_y);
                         try
                         {
-                            GridObject grid_object = GetBlock(trailing_x_block, next_block_y);
+                            Item grid_object = GetBlock(trailing_x_block, next_block_y);
                             if (grid_object != null)
-                                is_active = grid_object.CheckCollision(y_surface, fall_through);
+                                is_active = grid_object.CheckGridCollision(y_surface, fall_through);
                             else
                                 is_active = false;
                         }
@@ -411,16 +412,16 @@ namespace Teraform
             return object_velocity;
         }
 
-        public void SetBlockState(int x, int y, bool is_active)
-        {
-            int block_x = x / BLOCK_WIDTH;
-            int block_y = y / BLOCK_HEIGHT;
-            GridObject block = GetBlock(block_x, block_y);
-            if (block != null)
-            {
-                _blocks[block_x, block_y].IsActive = is_active;
-            }
-        }
+        //public void SetBlockState(int x, int y, bool is_active)
+        //{
+        //    int block_x = x / BLOCK_WIDTH;
+        //    int block_y = y / BLOCK_HEIGHT;
+        //    Item block = GetBlock(block_x, block_y);
+        //    if (block != null)
+        //    {
+        //        _blocks[block_x, block_y].IsActive = is_active;
+        //    }
+        //}
         //TODO handle the mouse pointer clicks and other events.
 
         public void GetBlockCoordinates(int point_x, int point_y, out int block_x, out int block_y)
@@ -441,22 +442,23 @@ namespace Teraform
         {
 
         }
-        public GridObject GetBlock(int grid_x, int grid_y)
+        public Item GetBlock(int grid_x, int grid_y)
         {
             if (grid_x < 0 || grid_x >= _width || grid_y < 0 || grid_y >= _height)
                 return null;
             return _blocks[grid_x, grid_y];
         }
 
-        public bool PlaceObject(int world_x, int world_y, GridObject grid_object)
+        public bool PlaceObject(int world_x, int world_y, Item grid_object)
         {
-            int grid_x = world_x / BLOCK_WIDTH;
-            int grid_y = world_y / BLOCK_HEIGHT;
-            if (grid_x < 0 || grid_x >= _width || grid_y < 0 || grid_y >= _height || _blocks[grid_x, grid_y] != null)
-                return false;
+            //TODO make this do stuff
+            //int grid_x = world_x / BLOCK_WIDTH;
+            //int grid_y = world_y / BLOCK_HEIGHT;
+            //if (grid_x < 0 || grid_x >= _width || grid_y < 0 || grid_y >= _height || _blocks[grid_x, grid_y] != null)
+            //    return false;
 
-            grid_object.GridPosition = new Point(grid_x, grid_y);
-            _blocks[grid_x, grid_y] = grid_object;
+            //grid_object.GridPosition = new Point(grid_x, grid_y);
+            //_blocks[grid_x, grid_y] = grid_object;
             return true;
         }
 

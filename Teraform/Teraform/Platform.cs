@@ -8,17 +8,17 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Teraform
 {
-    public class Platform : GridObject
+    public class Platform : Item
     {
-        public Platform(Texture2D texture, Point gridPosition, bool isActive = true)
-            : base(texture, gridPosition, isActive)
+        public Platform(Point position, Texture2D texture, ITEM_STATE itemState)
+            : base(position, texture, itemState)
         {         
         }
 
-        public override bool CheckCollision(BLOCK_SURFACE contactSurface, int tryFallThrough)
+        public override bool CheckGridCollision(BLOCK_SURFACE contactSurface, int tryFallThrough)
         {
             //You can only collide with the top surface, but you can fall through it if you want to
-            if ((IsActive == true) && (contactSurface == BLOCK_SURFACE.BLOCK_TOP) && ((tryFallThrough & (1 << (int)BLOCK_SURFACE.BLOCK_TOP)) == 0))
+            if ((_currentState == ITEM_STATE.IN_GRID) && (contactSurface == BLOCK_SURFACE.BLOCK_TOP) && ((tryFallThrough & (1 << (int)BLOCK_SURFACE.BLOCK_TOP)) == 0))
                 return true;
 
             return false;

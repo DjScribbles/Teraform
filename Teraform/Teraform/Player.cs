@@ -55,7 +55,7 @@ namespace Teraform
                 fall_through |= Keyboard.GetState().IsKeyDown(Keys.S);
 
             if (fall_through == true)
-                this.FallThrough = (1 << (int)Teraform.GridObject.BLOCK_SURFACE.BLOCK_TOP);
+                this.FallThrough = (1 << (int)Teraform.Item.BLOCK_SURFACE.BLOCK_TOP);
             else
                 this.FallThrough = 0;
 
