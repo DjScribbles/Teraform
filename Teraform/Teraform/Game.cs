@@ -19,13 +19,13 @@ namespace Teraform
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Game1 : Microsoft.Xna.Framework.Game
+    public class Game : Microsoft.Xna.Framework.Game
     {
         static Camera2D _gameCamera;
         Player theDude;
         //GameObject theBabe;
         SpriteFont font;
-        CollisionGrid theGrid;
+        public CollisionGrid theGrid;
 
         //Vector2 spriteAcceleration = new Vector2(100.0f, 0.0f);
         //const int JUMP_VELOCITY = -250;
@@ -34,7 +34,7 @@ namespace Teraform
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         
-        public Game1()
+        public Game()
         {
             
             graphics = new GraphicsDeviceManager(this);
@@ -69,6 +69,10 @@ namespace Teraform
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            if (_gameCamera == null)
+            {
+                _gameCamera = new Camera2D(graphics.GraphicsDevice.Viewport);
+            }
             Texture2D theDudeTexture;
             theDudeTexture = Content.Load<Texture2D>("dude");
 
@@ -92,6 +96,8 @@ namespace Teraform
             }
 
             theDude = new Player(theDudeTexture, Vector2.Zero);
+            theDude.TempAddItem(new BasicBlock(new Point(0, 0), Content.Load<Texture2D>("Active"), Item.ITEM_STATE.IN_INVENTORY));
+            theDude.TempAddItem(new Platform(new Point(0, 0), Content.Load<Texture2D>("Platform"), Item.ITEM_STATE.IN_INVENTORY));
             
             // TODO: use this.Content to load your game content here
         }
@@ -121,7 +127,7 @@ namespace Teraform
             }
             if (_gameCamera == null)
             {
-                _gameCamera = new Camera2D(graphics.GraphicsDevice.Viewport);
+                
             }
             //Detecting button presses this frame
             //Buttons lastFrame;
@@ -131,19 +137,6 @@ namespace Teraform
             
             theDude.Update(gameTime.ElapsedGameTime.TotalSeconds, theGrid);
             
-            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
-            {
-                theGrid.PlaceObject(Mouse.GetState().X + _gameCamera.Left, Mouse.GetState().Y + _gameCamera.Top, new BasicBlock(new Point(0,0), Content.Load<Texture2D>("Active"), Item.ITEM_STATE.IN_GRID));
-            }
-            if (Mouse.GetState().MiddleButton == ButtonState.Pressed)
-            {
-                theGrid.PlaceObject(Mouse.GetState().X + _gameCamera.Left, Mouse.GetState().Y + _gameCamera.Top, new Platform(new Point(0, 0), Content.Load<Texture2D>("Platform"), Item.ITEM_STATE.IN_GRID));
-            }
-            if (Mouse.GetState().RightButton == ButtonState.Pressed)
-            {
-                theGrid.RemoveObject(Mouse.GetState().X + _gameCamera.Left, Mouse.GetState().Y + _gameCamera.Top);
-            }
-
             base.Update(gameTime);
         }
 

@@ -62,6 +62,11 @@ namespace Teraform
             _equippedTexture = equippedTexture;
         }
 
+        public Item ShallowCopy()
+        {
+            return (Item)this.MemberwiseClone();
+        }
+
         public bool Use(Point location, GameCharacter user) 
         {
             switch (_currentState)
@@ -158,5 +163,9 @@ namespace Teraform
             }
         }
 
+        public virtual void ConsumeOne()
+        {
+            //Do nothing for now, in the future this will be a property of individual items whether they get used up or not.
+        }
     }
 }
