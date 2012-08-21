@@ -190,11 +190,7 @@ namespace Teraform
                         bool is_active = true;
                         try
                         {
-                            Item grid_object = GetBlock(next_block_x, block);
-                            if (grid_object != null)
-                                is_active = grid_object.CheckGridCollision(x_surface, fall_through);
-                            else
-                                is_active = false;
+                            is_active = CheckGridCollision(next_block_x, block, x_surface, fall_through);
                         }
                         catch (IndexOutOfRangeException err)
                         {
@@ -229,12 +225,7 @@ namespace Teraform
 
                         try
                         {
-                            Item grid_object = GetBlock(next_block_x, trailing_y_block);
-                            if (grid_object != null)
-                                is_active = grid_object.CheckGridCollision(x_surface, fall_through);
-                            else
-                                is_active = false;
-
+                            is_active = CheckGridCollision(next_block_x, trailing_y_block, x_surface, fall_through, false);
                         }
                         catch (IndexOutOfRangeException err)  //if the trailing block is out of bounds, we don't care
                         {
@@ -291,11 +282,7 @@ namespace Teraform
                         bool is_active = true;
                         try
                         {
-                            Item grid_object = GetBlock(block, next_block_y);
-                            if (grid_object != null)
-                                is_active = grid_object.CheckGridCollision(y_surface, fall_through);
-                            else
-                                is_active = false;
+                            is_active = CheckGridCollision(block, next_block_y, y_surface, fall_through);
                         }
                         catch (IndexOutOfRangeException err)
                         {
@@ -329,11 +316,7 @@ namespace Teraform
                         if (DEBUG_ENABLED == true) Console.Out.Write("[{0}, {1}]", trailing_x_block, next_block_y);
                         try
                         {
-                            Item grid_object = GetBlock(trailing_x_block, next_block_y);
-                            if (grid_object != null)
-                                is_active = grid_object.CheckGridCollision(y_surface, fall_through);
-                            else
-                                is_active = false;
+                            is_active = CheckGridCollision(trailing_x_block, next_block_y, y_surface, fall_through, false);
                         }
                         catch (IndexOutOfRangeException err)  //if the trailing block is out of bounds, we don't care
                         {
@@ -442,6 +425,19 @@ namespace Teraform
         {
 
         }
+
+        public bool CheckGridCollision(int grid_x, int grid_y, Item.BLOCK_SURFACE surface, int fall_through, bool boundary_unpassable = true)
+        {
+            if (grid_x < 0 || grid_x >= _width || grid_y < 0 || grid_y >= _height) 
+                return boundary_unpassable;
+
+            Item grid_object = _blocks[grid_x, grid_y];
+
+            if (grid_object != null)
+                return grid_object.CheckGridCollision(surface, fall_through);
+            else
+                return false;
+        }
         public Item GetBlock(int grid_x, int grid_y)
         {
             if (grid_x < 0 || grid_x >= _width || grid_y < 0 || grid_y >= _height)
@@ -452,13 +448,16 @@ namespace Teraform
         public bool PlaceObject(int world_x, int world_y, Item grid_object)
         {
             //TODO make this do stuff
-            //int grid_x = world_x / BLOCK_WIDTH;
-            //int grid_y = world_y / BLOCK_HEIGHT;
-            //if (grid_x < 0 || grid_x >= _width || grid_y < 0 || grid_y >= _height || _blocks[grid_x, grid_y] != null)
-            //    return false;
+            int grid_x = world_x / BLOCK_WIDTH;
+            int grid_y = world_y / BLOCK_HEIGHT;
+            if (grid_x < 0 || grid_x >= _width || grid_y < 0 || grid_y >= _height || _blocks[grid_x, grid_y] != null)
+                return false;
 
-            //grid_object.GridPosition = new Point(grid_x, grid_y);
-            //_blocks[grid_x, grid_y] = grid_object;
+            grid_object._drawLocation.X = world_x - (world_x % BLOCK_WIDTH);
+            grid_object._drawLocation.Y = world_y - (world_y % BLOCK_HEIGHT);
+            grid_object.ItemState = Item.ITEM_STATE.IN_GRID;
+
+            _blocks[grid_x, grid_y] = grid_object;
             return true;
         }
 
