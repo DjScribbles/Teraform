@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Content;
 namespace Teraform
 {
     //TODO figure out if this class should actually do anything, if not, nix it, item isn't an abstract class, this is just pointless right now
-    class BasicBlock : Item
+    public class Block : Item
     {
         //Texture2D PassiveTexture; 
 
@@ -18,21 +18,28 @@ namespace Teraform
         //    //PassiveTexture = passive_texture;
         //}
 
-        public BasicBlock(Point position, Texture2D active_texture/*, Texture2D passive_texture*/, ITEM_STATE itemState)
+        public Block(Point position, Texture2D active_texture/*, Texture2D passive_texture*/, ITEM_STATE itemState)
             : base(position, active_texture, itemState)
         {
             //PassiveTexture = passive_texture;
         }
 
-        //public override void Draw(SpriteBatch spriteBatch)
-        //{
-        //    Texture2D texture = PassiveTexture;
-        //    if (IsActive)
-        //    {
-        //        texture = Texture;
-        //    }
-        //    spriteBatch.Draw(texture, WorldPosition, Color.White);
-        //}
+        public override bool Use(Point location, GameCharacter user)
+        {
+            bool block_placed = false;
+            if (_currentState == ITEM_STATE.IN_INVENTORY)
+            {
+                block_placed = Game.GridInstane.PlaceObject(location.X, location.Y, this.ShallowCopy());
+                if (block_placed == true)
+                    ConsumeOne();
+            }
+
+            return block_placed;
+        }
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            base.Draw(spriteBatch);
+        }
 
         //public override Rectangle BoundingBox
         //{

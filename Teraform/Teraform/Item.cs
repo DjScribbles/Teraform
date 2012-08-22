@@ -67,21 +67,21 @@ namespace Teraform
             return (Item)this.MemberwiseClone();
         }
 
-        public bool Use(Point location, GameCharacter user) 
+        public virtual bool Use(Point location, GameCharacter user) 
         {
-            switch (_currentState)
-            {
-                case ITEM_STATE.IN_GRID:
-                    break;
+            //switch (_currentState)
+            //{
+            //    case ITEM_STATE.IN_GRID:
+            //        break;
 
-                case ITEM_STATE.IN_INVENTORY:
-                    break;
+            //    case ITEM_STATE.IN_INVENTORY:
+            //        break;
 
-            }
+            //}
             return false;
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public virtual void Draw(SpriteBatch spriteBatch)
         {
             if (_currentState == ITEM_STATE.IN_GRID)
             {

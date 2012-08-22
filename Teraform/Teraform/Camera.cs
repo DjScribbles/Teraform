@@ -81,6 +81,7 @@ namespace Teraform.Camera
             Matrix projection = Matrix.CreateTranslation(new Vector3(_viewport.Width * 0.5f, _viewport.Height * 0.5f, 0)) *
                              Matrix.CreateScale(new Vector3(1f, 1f, 1f));
             _viewMatrix = projection * _viewMatrix;
+            
         }
     }
 }

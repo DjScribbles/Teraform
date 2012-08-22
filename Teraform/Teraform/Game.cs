@@ -25,7 +25,7 @@ namespace Teraform
         Player theDude;
         //GameObject theBabe;
         SpriteFont font;
-        public CollisionGrid theGrid;
+        static CollisionGrid _theGrid;
 
         //Vector2 spriteAcceleration = new Vector2(100.0f, 0.0f);
         //const int JUMP_VELOCITY = -250;
@@ -45,6 +45,10 @@ namespace Teraform
         public static Camera2D CameraInstance
         {
             get { return _gameCamera; }
+        }
+        public static CollisionGrid GridInstane
+        {
+            get { return _theGrid; }
         }
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
@@ -82,21 +86,21 @@ namespace Teraform
                 
                     try
                     {
-                        theGrid = new CollisionGrid("C:\\Users\\Public\\MyLevel.lvl", Content.Load<Texture2D>("Active"), Content.Load<Texture2D>("Inactive"), Content.Load<Texture2D>("Platform"));
+                        _theGrid = new CollisionGrid("C:\\Users\\Public\\MyLevel.lvl", Content.Load<Texture2D>("Active"), Content.Load<Texture2D>("Inactive"), Content.Load<Texture2D>("Platform"));
                     }
                     catch //err as F
                     {
-                        theGrid = new CollisionGrid(100, 100, Content.Load<Texture2D>("Active"), Content.Load<Texture2D>("Inactive"), Content.Load<Texture2D>("Platform"));
+                        _theGrid = new CollisionGrid(100, 100);
                     }
 
             }
             else
             {
-                theGrid = new CollisionGrid(100, 100, Content.Load<Texture2D>("Active"), Content.Load<Texture2D>("Inactive"), Content.Load<Texture2D>("Platform"));
+                _theGrid = new CollisionGrid(100, 100);
             }
 
             theDude = new Player(theDudeTexture, Vector2.Zero);
-            theDude.TempAddItem(new BasicBlock(new Point(0, 0), Content.Load<Texture2D>("Active"), Item.ITEM_STATE.IN_INVENTORY));
+            theDude.TempAddItem(new Block(new Point(0, 0), Content.Load<Texture2D>("Active"), Item.ITEM_STATE.IN_INVENTORY));
             theDude.TempAddItem(new Platform(new Point(0, 0), Content.Load<Texture2D>("Platform"), Item.ITEM_STATE.IN_INVENTORY));
             
             // TODO: use this.Content to load your game content here
@@ -122,7 +126,7 @@ namespace Teraform
             if ((GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed) ||
                 (Keyboard.GetState().IsKeyDown(Keys.Escape) == true))
             {
-                theGrid.Save();
+                _theGrid.Save();
                 this.Exit();
             }
             if (_gameCamera == null)
@@ -135,7 +139,7 @@ namespace Teraform
             //Buttons pressed = ~lastFrame & currentFrame;
 
             
-            theDude.Update(gameTime.ElapsedGameTime.TotalSeconds, theGrid);
+            theDude.Update(gameTime.ElapsedGameTime.TotalSeconds, _theGrid);
             
             base.Update(gameTime);
         }
@@ -158,7 +162,7 @@ namespace Teraform
 
             //spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.AlphaBlend, null, null, null, null, Matrix.Identity);
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, null, null, null, null, _gameCamera.ViewMatrix);
-            theGrid.Draw(spriteBatch);
+            _theGrid.Draw(spriteBatch);
             theDude.Draw(spriteBatch);
             spriteBatch.DrawString(font,"Test", Vector2.Zero, Color.Maroon);
             spriteBatch.End();

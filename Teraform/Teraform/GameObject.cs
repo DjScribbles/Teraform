@@ -102,7 +102,7 @@ namespace BoundingBoxCollision
         }
 
 
-        public void Draw(SpriteBatch spriteBatch)
+        public virtual void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(_texture, _boundingBox, Color.White);
         }
@@ -124,22 +124,25 @@ namespace BoundingBoxCollision
                 new_velocity.X = 0;
             if (distance_traveled.Y != distance_to_travel.Y)
             {
-                //If we were stopped from traveling downward, set the isAirborn flag to false
-                if (distance_to_travel.Y > distance_traveled.Y)
-                {
-                    _isAirborn = false;
-                }
                 new_velocity.Y = 0;
-            }
-            else
-            {
-                _isAirborn = true;
             }
 
             Velocity = new_velocity;
 
+            int original_y_position = _boundingBox.Y;
 
             AddToPositionAndCarry(distance_traveled);
+
+            //If we were stopped from traveling downward, set the isAirborn flag to false
+            if (distance_to_travel.Y > distance_traveled.Y)
+            {
+                _isAirborn = false;
+            }
+            //Otherwise if we moved in the Y direction, set us as airborn
+            else if (original_y_position != _boundingBox.Y)
+            {
+                _isAirborn = true;
+            }
         }
 
         private void AddToPositionAndCarry(Vector2 distance_traveled)

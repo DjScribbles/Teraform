@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Microsoft.Xna.Framework.Graphics;
+
 namespace Teraform
 {
     public class Belt
@@ -26,6 +28,11 @@ namespace Teraform
 
         }
 
+        public void Draw(SpriteBatch spriteBatch)
+        {
+
+        }
+
         public void SelectNextItem()
         {
             int starting_index = _selectedBeltIndex;
@@ -36,7 +43,7 @@ namespace Teraform
                 if (_selectedBeltIndex >= _numberOfBeltItems)
                     _selectedBeltIndex = 0;
 
-            } while (false && (_selectedBeltIndex != starting_index));
+            } while ((_beltItems[_selectedBeltIndex] == null) && (_selectedBeltIndex != starting_index));
         }
 
         public void SelectPreviousItem()
@@ -48,7 +55,7 @@ namespace Teraform
                     _selectedBeltIndex = _numberOfBeltItems;
 
                 _selectedBeltIndex--;
-            } while (false && (_selectedBeltIndex != starting_index));
+            } while ((_beltItems[_selectedBeltIndex] == null) && (_selectedBeltIndex != starting_index));
         }
 
         public Item GetCurrentBeltItem()
@@ -56,7 +63,16 @@ namespace Teraform
             return _beltItems[_selectedBeltIndex];
         }
 
-        public bool AddBeltItem(Item item, int index)
+        public Item GetQuickSlotItem(uint index)
+        {
+            if (index < _numberOfQuickSlots)
+            {
+                return _quickSlotItems[index];
+            }
+            return null;
+        }
+
+        public bool AddBeltItem(Item item, uint index)
         {
             if (item == null) return false;
 

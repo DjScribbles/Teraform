@@ -23,20 +23,11 @@ namespace Teraform
         private Item[,] _blocks;
 
         //TODO fix texture loading so this isn't needed, it's really dumb
-        public CollisionGrid(int width, int height, Texture2D active, Texture2D passive, Texture2D platformTexture)
+        public CollisionGrid(int width, int height)
         {
             _width = width;
             _height = height;
             _blocks = new Item[width, height];
-            //Point index;
-            //for (index.X = 0; index.X < width; index.X++)
-            //{
-            //    for (index.Y = 0; index.Y < height; index.Y++)
-            //    {
-            //        Blocks[index.X, index.Y] = new BasicBlock(active, passive, index, false);
-            //    }
-            //}
-
         }
         public CollisionGrid(String filename, Texture2D active, Texture2D passive, Texture2D platformTexture)
         {
@@ -55,9 +46,9 @@ namespace Teraform
                     for (index.Y = 0; index.Y < height; index.Y++)
                     {
                         String objectName = file.ReadLine();
-                        if (objectName.CompareTo("Teraform.BasicBlock") == 0)
+                        if (objectName.CompareTo("Teraform.Block") == 0)
                         {
-                            _blocks[index.X, index.Y] = new BasicBlock(new Point(index.X * 16, index.Y * 16), active, Item.ITEM_STATE.IN_GRID);
+                            _blocks[index.X, index.Y] = new Block(new Point(index.X * 16, index.Y * 16), active, Item.ITEM_STATE.IN_GRID);
 
                         }
                         if (objectName.CompareTo("Teraform.Platform") == 0)

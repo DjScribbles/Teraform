@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Teraform
 {
-    public class Platform : Item
+    public class Platform : Block
     {
         public Platform(Point position, Texture2D texture, ITEM_STATE itemState)
             : base(position, texture, itemState)

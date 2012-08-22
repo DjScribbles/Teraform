@@ -66,7 +66,7 @@ namespace Teraform
             if (_usingPcControls == true)
                 fall_through |= Keyboard.GetState().IsKeyDown(Keys.S);
 
-            if (fall_through == true)
+            if ((fall_through == true) && (IsAirborn == false))
                 this.FallThrough = (1 << (int)Teraform.Item.BLOCK_SURFACE.BLOCK_TOP);
             else
                 this.FallThrough = 0;
@@ -111,9 +111,9 @@ namespace Teraform
                     if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                     {
                         Item selectedItem = _belt.GetCurrentBeltItem();
-                        if ((selectedItem != null) && (grid.PlaceObject(Mouse.GetState().X + camera.Left, Mouse.GetState().Y + camera.Top, selectedItem.ShallowCopy()) == true))
-                        {                           
-                            selectedItem.ConsumeOne();
+                        if (selectedItem != null)
+                        {
+                            selectedItem.Use(new Point(Mouse.GetState().X + camera.Left, Mouse.GetState().Y + camera.Top), this);
                         }
                     }
                     if (Mouse.GetState().RightButton == ButtonState.Pressed)
@@ -126,9 +126,15 @@ namespace Teraform
             base.Update(total_seconds_elapsed, grid);
         }
 
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            base.Draw(spriteBatch);
+        }
+        
         public void TempAddItem(Item item)
         {
             _belt.AddBeltItem(item);
         }
+
     }
 }
