@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<XnaContent>
+  <Asset Type="TeraformData.ItemData[]">
+    <Item>
+      <Id>1</Id>
+      <Name>Basic Platform</Name>
+      <ClassType>Teraform.Platform</ClassType>
+      <UniversalTexture>Platform.png</UniversalTexture>
+      <GridTexture></GridTexture>
+      <WorldTexture></WorldTexture>
+      <InventoryTexture></InventoryTexture>
+      <EquipTexture></EquipTexture>
+    </Item>
+    <Item>
+      <Id>2</Id>
+      <Name>Basic Block</Name>
+      <ClassType>Teraform.Block</ClassType>
+      <UniversalTexture>Block.png</UniversalTexture>
+      <GridTexture></GridTexture>
+      <WorldTexture></WorldTexture>
+      <InventoryTexture></InventoryTexture>
+      <EquipTexture></EquipTexture>
+    </Item>
+  </Asset>
+</XnaContent>

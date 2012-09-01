@@ -10,6 +10,20 @@ namespace Teraform
 {
     public class Item
     {
+        private string _itemName;
+        private ulong _itemId;
+        private uint _itemStackSize;
+        private bool _itemIsConsumed;
+
+        protected ITEM_STATE _currentState;
+        public Vector2 _drawLocation;
+        public decimal _drawRotation;
+
+        private Texture2D _gridTexture;
+        private Texture2D _worldTexture;
+        private Texture2D _inventoryTexture;
+        private Texture2D _equippedTexture;
+
         public enum ITEM_STATE 
         {
             IN_WORLD,
@@ -26,14 +40,6 @@ namespace Teraform
             BLOCK_RIGHT
         };
 
-        protected ITEM_STATE _currentState;
-        public Vector2 _drawLocation;
-        public decimal _drawRotation;
-
-        private Texture2D _gridTexture;
-        private Texture2D _worldTexture;
-        private Texture2D _inventoryTexture;
-        private Texture2D _equippedTexture;
 
         public Item(Point location, Texture2D allTextures, ITEM_STATE itemState)
         {
@@ -85,8 +91,8 @@ namespace Teraform
         {
             if (_currentState == ITEM_STATE.IN_GRID)
             {
-                _drawLocation.X = ((int)_drawLocation.X) & (~0xF);
-                _drawLocation.Y = ((int)_drawLocation.Y) & (~0xF);
+                _drawLocation.X = ((uint)_drawLocation.X) & (~0xF);
+                _drawLocation.Y = ((uint)_drawLocation.Y) & (~0xF);
             }
             
             spriteBatch.Draw(CurrentTexture, _drawLocation, Color.White);

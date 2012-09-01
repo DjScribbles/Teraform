@@ -12,6 +12,7 @@ using BoundingBoxCollision;
 
 using Teraform.Camera;
 using Teraform;
+using TeraformData;
 
 namespace Teraform
 {
@@ -38,8 +39,14 @@ namespace Teraform
         {
             
             graphics = new GraphicsDeviceManager(this);
+
             
             Content.RootDirectory = "Content";
+            CustomWorldData worldData = new CustomWorldData("Examplia");
+            worldData.LoadContent(Content);
+
+            //Texture2D.FromStream(graphics, new System.IO.StreamReader(Environment.SpecialFolder.Resources + "Custom\\" + );
+            
         }
 
         public static Camera2D CameraInstance

@@ -76,6 +76,7 @@
     <Compile Include="Belt.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Character.cs" />
+    <Compile Include="ItemData.cs" />
     <Compile Include="Item.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Platform.cs" />
@@ -92,6 +93,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\TeraformData\TeraformData.csproj">
+      <Project>{959A7E66-AF77-4BAC-BF2B-293B48FBD55A}</Project>
+      <Name>TeraformData</Name>
+    </ProjectReference>
     <ProjectReference Include="..\TeraformContent\TeraformContent.contentproj">
       <Name>TeraformContent %28Content%29</Name>
       <XnaReferenceType>Content</XnaReferenceType>
