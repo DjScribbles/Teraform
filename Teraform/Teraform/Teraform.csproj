@@ -76,8 +76,8 @@
     <Compile Include="Belt.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Character.cs" />
-    <Compile Include="ItemData.cs" />
     <Compile Include="Item.cs" />
+    <Compile Include="ItemCatalog.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="CollisionGrid.cs" />

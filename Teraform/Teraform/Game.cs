@@ -32,18 +32,17 @@ namespace Teraform
         //const int JUMP_VELOCITY = -250;
         //const int RUN_VELOCITY = 500;
 
-        GraphicsDeviceManager graphics;
+        static GraphicsDeviceManager _graphics;
+        public static ItemCatalog itemCatalog;
         SpriteBatch spriteBatch;
         
         public Game()
         {
             
-            graphics = new GraphicsDeviceManager(this);
+            _graphics = new GraphicsDeviceManager(this);
 
             
             Content.RootDirectory = "Content";
-            CustomWorldData worldData = new CustomWorldData("Examplia");
-            worldData.LoadContent(Content);
 
             //Texture2D.FromStream(graphics, new System.IO.StreamReader(Environment.SpecialFolder.Resources + "Custom\\" + );
             
@@ -56,6 +55,10 @@ namespace Teraform
         public static CollisionGrid GridInstane
         {
             get { return _theGrid; }
+        }
+        public static GraphicsDeviceManager GraphicsInstance
+        {
+            get { return _graphics; }
         }
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
@@ -82,12 +85,19 @@ namespace Teraform
             spriteBatch = new SpriteBatch(GraphicsDevice);
             if (_gameCamera == null)
             {
-                _gameCamera = new Camera2D(graphics.GraphicsDevice.Viewport);
+                _gameCamera = new Camera2D(_graphics.GraphicsDevice.Viewport);
             }
             Texture2D theDudeTexture;
             theDudeTexture = Content.Load<Texture2D>("dude");
 
             font = Content.Load<SpriteFont>("SpriteFont1");
+
+
+            CustomWorldData worldData = new CustomWorldData("Examplia");
+            worldData.LoadContent(Content);
+
+            itemCatalog = new ItemCatalog(worldData._itemData);
+
             if (System.IO.File.Exists("C:\\Users\\Public\\MyLevel.lvl") == true)
             {
                 
@@ -106,9 +116,11 @@ namespace Teraform
                 _theGrid = new CollisionGrid(100, 100);
             }
 
+
+
             theDude = new Player(theDudeTexture, Vector2.Zero);
-            theDude.TempAddItem(new Block(new Point(0, 0), Content.Load<Texture2D>("Active"), Item.ITEM_STATE.IN_INVENTORY));
-            theDude.TempAddItem(new Platform(new Point(0, 0), Content.Load<Texture2D>("Platform"), Item.ITEM_STATE.IN_INVENTORY));
+            theDude.TempAddItem(itemCatalog.GetItem(2));
+            theDude.TempAddItem(itemCatalog.GetItem(1));
             
             // TODO: use this.Content to load your game content here
         }
@@ -159,11 +171,11 @@ namespace Teraform
         {
             if (_gameCamera == null)
             {
-                _gameCamera = new Camera2D(graphics.GraphicsDevice.Viewport);
+                _gameCamera = new Camera2D(_graphics.GraphicsDevice.Viewport);
             }
             GraphicsDevice.Clear(Color.LightSkyBlue);
 
-            Plane y_plane = new Plane(-1 * Vector3.UnitY, graphics.GraphicsDevice.Viewport.Height / 2);
+            Plane y_plane = new Plane(-1 * Vector3.UnitY, _graphics.GraphicsDevice.Viewport.Height / 2);
             //Plane y_plane = new Plane(Vector3.UnitY, (float)-gameTime.TotalGameTime.TotalSeconds);
             _gameCamera.Center = theDude.BoundingBox.Center;
 

@@ -49,11 +49,32 @@ namespace Teraform
                         if (objectName.CompareTo("Teraform.Block") == 0)
                         {
                             _blocks[index.X, index.Y] = new Block(new Point(index.X * 16, index.Y * 16), active, Item.ITEM_STATE.IN_GRID);
+                            _blocks[index.X, index.Y]._itemId = 2;
 
                         }
                         if (objectName.CompareTo("Teraform.Platform") == 0)
                         {
                             _blocks[index.X, index.Y] = new Platform(new Point(index.X * 16, index.Y * 16), platformTexture, Item.ITEM_STATE.IN_GRID);
+                            _blocks[index.X, index.Y]._itemId = 1;
+                        }
+
+                        if (objectName.CompareTo("1") == 0)
+                        {
+                            Item item = Game.itemCatalog.GetItem(1);
+                            item._drawLocation.X = index.X * 16;
+                            item._drawLocation.Y = index.Y * 16;
+                            item.ItemState = Item.ITEM_STATE.IN_GRID;
+                            _blocks[index.X, index.Y] = item;
+
+                        }
+                        if (objectName.CompareTo("2") == 0)
+                        {
+
+                            Item item = Game.itemCatalog.GetItem(2);
+                            item._drawLocation.X = index.X * 16;
+                            item._drawLocation.Y = index.Y * 16;
+                            item.ItemState = Item.ITEM_STATE.IN_GRID;
+                            _blocks[index.X, index.Y] = item;
                         }
 
                     }

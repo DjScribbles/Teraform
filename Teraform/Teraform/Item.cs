@@ -10,8 +10,8 @@ namespace Teraform
 {
     public class Item
     {
-        private string _itemName;
-        private ulong _itemId;
+        public string _itemName;
+        public ulong _itemId;
         private uint _itemStackSize;
         private bool _itemIsConsumed;
 
@@ -172,6 +172,10 @@ namespace Teraform
         public virtual void ConsumeOne()
         {
             //Do nothing for now, in the future this will be a property of individual items whether they get used up or not.
+        }
+        public override string ToString()
+        {
+            return _itemId.ToString();
         }
     }
 }
